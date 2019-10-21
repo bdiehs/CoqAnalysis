@@ -2,7 +2,7 @@
 Set Implicit Arguments.
 Section FieldDef.
 
-Variable U_star : Type.
+Context `{U_star : Type}.
 
 (*An element of type U is either 0 or something with an inverse*)
 Inductive U : Type :=
@@ -19,9 +19,11 @@ Class Field : Type :=
     F_1_star : U_star;
   }.
 
-Variable F : Field.
+Context `{F : Field}.
 
 Definition F_1 : U := F_star F_1_star.
+
+End FieldDef.
 
 Delimit Scope F_scope with field.
 Local Open Scope F_scope.
@@ -30,10 +32,11 @@ Notation "a + b" := (F_add a b) : F_scope.
 Notation "a * b" := (F_mul a b) : F_scope.
 Notation "- a" := (F_opp a) : F_scope.
 Notation "` a" := (F_inv a) (at level 40) : F_scope.
-Notation "0" := F_0 : F_scope.
-Notation "1" := F_1 : F_scope.
+Notation "0" := (F_0) : F_scope.
+Notation "1" := (F_1) : F_scope.
 
-Class FieldTheory : Type :=
+
+Class FieldTheory (U_star : Type) (F : @Field U_star) : Type :=
   {
     F_add_comm : forall x y, x + y = y + x;
     F_add_assoc : forall x y z, x + y + z = x + (y + z);
@@ -47,10 +50,11 @@ Class FieldTheory : Type :=
     F_distr : forall x y z, x * (y + z) = (x * y) + (x * z);
   }.
 
-
 Section Props.
 
-Variable FT : FieldTheory.
+Variable U_star : Type.
+Variable F : @Field U_star.
+Variable FT : @FieldTheory U_star F.
 
 Definition Prop1_14_a : forall x y z,
    x + y = x + z -> y = z.
@@ -59,8 +63,8 @@ Proof.
   rewrite <- (F_add_0 y), <- (F_add_0 z).
   rewrite <- (F_add_opp_0 x).
   rewrite (F_add_comm x).
-  rewrite F_add_assoc with (z := y).
-  rewrite F_add_assoc with (z := z).
+  rewrite (F_add_assoc _ _ y).
+  rewrite (F_add_assoc _ _ z).
   f_equal. apply H.
 Qed.
 
@@ -69,11 +73,11 @@ Definition Prop1_14_b : forall x y,
 Proof.
   intros.
   apply Prop1_14_a with (x := x).
-  rewrite F_add_comm with (y := 0).
+  rewrite (F_add_comm _ 0).
   rewrite F_add_0.
   apply H.
 Qed.
 
 End Props.
 
-End FieldDef.
+Close Scope F_scope.

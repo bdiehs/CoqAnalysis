@@ -108,7 +108,7 @@ Proof.
         - apply H7 in H3. apply H3. }
       * apply H6 in H4. apply H4.
 Qed.
-Print Th_1_11.
+
 
 
 
