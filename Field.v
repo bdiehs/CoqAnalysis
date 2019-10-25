@@ -2,26 +2,25 @@
 Set Implicit Arguments.
 Section FieldDef.
 
-Context `{U_star : Type}.
+Context `{U : Type}.
 
 (*An element of type U is either 0 or something with an inverse*)
-Inductive U : Type :=
-  | F_0
-  | F_star (u : U_star)
-.
+
+Context `{ApartZero : U -> Prop}.
+Definition Nonzero := sig (ApartZero).
 
 Class Field : Type :=
   {
     F_add : U -> U -> U;
     F_opp : U -> U;
     F_mul : U -> U -> U;
-    F_inv : U_star -> U;
-    F_1_star : U_star;
+    F_inv : Nonzero -> U;
+    F_0 : U;
+    F_1 : U;
   }.
 
 Context `{F : Field}.
 
-Definition F_1 : U := F_star F_1_star.
 
 End FieldDef.
 
@@ -31,12 +30,16 @@ Local Open Scope F_scope.
 Notation "a + b" := (F_add a b) : F_scope.
 Notation "a * b" := (F_mul a b) : F_scope.
 Notation "- a" := (F_opp a) : F_scope.
-Notation "` a" := (F_inv a) (at level 40) : F_scope.
+Notation "/ a" := (F_inv a) : F_scope.
+Notation "a - b" := (F_add a (F_opp b)) : F_scope.
+Notation "a / b" := (F_mul a (F_inv b)) : F_scope.
+Notation "` a" := (proj1_sig a) (at level 40) : F_scope.
 Notation "0" := (F_0) : F_scope.
 Notation "1" := (F_1) : F_scope.
 
 
-Class FieldTheory (U_star : Type) (F : @Field U_star) : Type :=
+Class FieldTheory (U : Type) (ApartZero : U -> Prop) (F : @Field U ApartZero)
+ : Type :=
   {
     F_add_comm : forall x y, x + y = y + x;
     F_add_assoc : forall x y z, x + y + z = x + (y + z);
@@ -45,16 +48,16 @@ Class FieldTheory (U_star : Type) (F : @Field U_star) : Type :=
     F_mul_comm : forall x y, x * y = y * x;
     F_mul_assoc : forall x y z, x * y * z = x * (y * z);
     F_mul_1 : forall x, 1 * x = x;
-    F_mul_inv_1 : forall x_star,
-      (F_star x_star) * (`x_star) = 1;
+    F_mul_inv_1 : forall x, `x / x = 1;
     F_distr : forall x y z, x * (y + z) = (x * y) + (x * z);
   }.
 
 Section Props.
 
-Variable U_star : Type.
-Variable F : @Field U_star.
-Variable FT : @FieldTheory U_star F.
+Variable U : Type.
+Variable ApartZero : U -> Prop.
+Variable F : @Field U ApartZero.
+Variable FT : @FieldTheory U ApartZero F.
 
 Definition Prop1_14_a : forall x y z,
    x + y = x + z -> y = z.
