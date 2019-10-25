@@ -33,7 +33,11 @@ Notation "- a" := (F_opp a) : F_scope.
 Notation "/ a" := (F_inv a) : F_scope.
 Notation "a - b" := (F_add a (F_opp b)) : F_scope.
 Notation "a / b" := (F_mul a (F_inv b)) : F_scope.
+(*`x will be the projection of a nonzero type to a U type*)
 Notation "` a" := (proj1_sig a) (at level 40) : F_scope.
+(*In this case, (x|Px) would be a nonzero element such that 
+  x is the element in U and Px is the proof that x is nonzero. *)
+Notation "x | Px" := (exist _ x Px) (at level 40) : F_scope.
 Notation "0" := (F_0) : F_scope.
 Notation "1" := (F_1) : F_scope.
 
@@ -79,6 +83,30 @@ Proof.
   rewrite (F_add_comm _ 0).
   rewrite F_add_0.
   apply H.
+Qed.
+
+Definition Prop1_14_c : forall x y,
+  x + y = 0 -> y = -x.
+Proof.  Admitted.
+
+Definition Prop1_14_d : forall x,
+  -(-x) = x.
+Proof.  Admitted.
+
+Definition Prop1_15_c : forall x y,
+  `x * y = 1 -> y = 1 / x.
+Proof.  Admitted.
+
+Definition Prop1_15_d : forall x Px Px_inv,
+  1 / ((1 / (x | Px)) | Px_inv) = x.
+Proof.
+  intros.
+  symmetry.
+  apply Prop1_15_c.
+  rewrite F_mul_comm.
+  simpl.
+  rewrite F_mul_1.
+  apply (F_mul_inv_1 (x|Px)).
 Qed.
 
 End Props.
