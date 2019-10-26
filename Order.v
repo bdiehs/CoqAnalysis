@@ -33,6 +33,7 @@ Class Order : Type :=
 End OrderDef.
 
 Notation "x < y" := (ord x y) : ord_scope.
+Notation "x < y < z" := ((ord x y) /\ (ord y z)) : ord_scope.
 Notation "x ≤ y" := (ord x y \/ x = y) (at level 50) : ord_scope.
 
 Section OrderBounds.
