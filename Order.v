@@ -42,6 +42,31 @@ Variable U : Type.
 
 Open Scope ord_scope.
 
+Definition order_trich_contr : forall (O: @Order U) x y,
+  x ≤ y /\ y < x -> False.
+Proof.
+  intros.
+  destruct H.
+  destruct (O_prop1 x y).
+  apply H1 in H0. apply H0.
+  destruct H1.
+  apply H1 in H0. apply H0.
+  destruct H.
+  apply H1 in H. apply H.
+  apply H1 in H. apply H.
+Qed.
+
+Definition order_trich_split : forall (O: @Order U) x y,
+  x ≤ y \/ y < x.
+Proof.
+  intros.
+  destruct (O_prop1 x y).
+  left. left. apply H.
+  destruct H.
+  left. right. apply H.
+  right. apply H.
+Qed.
+
 (*Definition 1.6*)
 
 
@@ -73,15 +98,15 @@ Definition greatest_lower_bound (O : Order) (E : U -> Prop) (alpha : U) :=
 Definition lub_property (O : Order)
   (sup : (U -> Prop) -> U) : Prop :=
   forall (E : U -> Prop)
-  (x_E : U) (beta_E : U)
-  (H : E x_E /\ upper_bound O E beta_E),
+  (x_E : U) (beta_E : U),
+  E x_E -> upper_bound O E beta_E ->
   least_upper_bound O E (sup E).
 
 Definition glb_property (O : Order)
   (inf : (U -> Prop) -> U) : Prop :=
   forall (E : U -> Prop)
-  (x_E : U) (beta_E : U)
-  (H : E x_E /\ lower_bound O E beta_E),
+  (x_E : U) (beta_E : U),
+  E x_E -> lower_bound O E beta_E ->
   greatest_lower_bound O E (inf E).
 
 (*Theorem 1.11*)
@@ -94,7 +119,7 @@ Proof.
   intros.
   exists (sup L).
   assert (least_upper_bound O L (sup L)).
-  { apply (H _ beta_B x_B). split.
+  { apply (H _ beta_B x_B).
     - unfold L. intros x H2. apply H1. apply H2.
     - intros x H2. apply H2. apply H0. }
   split.
@@ -123,6 +148,5 @@ Qed.
 Close Scope ord_scope.
 
 End OrderBounds.
-
 
 
