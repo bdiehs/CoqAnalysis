@@ -38,9 +38,9 @@ Notation "a - b" := (F_add a (F_opp b)) : F_scope.
 Notation "a / b" := (F_mul a (F_inv b)) : F_scope.
 (*`x will be the projection of a nonzero type to a U type*)
 Notation "` a" := (proj1_sig a) (at level 40) : F_scope.
-(*In this case, (x|Px) would be a nonzero element such that 
+(*In this case, (x†Px) would be a nonzero element such that 
   x is the element in U and Px is the proof that x is nonzero. *)
-Notation "x | Px" := (exist _ x Px) (at level 40) : F_scope.
+Notation "x † Px" := (exist _ x Px) (at level 40) : F_scope.
 Notation "0" := (F_0) : F_scope.
 Notation "1" := (`F_1) : F_scope.
 
@@ -115,11 +115,11 @@ Proof.  Admitted.
 
 (*I think this needs 1.16a*)
 Definition Prop_1_15_d_prev : forall x Px,
-   ApartZero (/(x|Px)).
+   ApartZero (/(x†Px)).
 Proof.  Admitted.
 
 Definition Prop1_15_d : forall x Px Px_inv,
-  1 / ((1 / (x | Px)) | Px_inv) = x.
+  1 / ((1 / (x † Px)) † Px_inv) = x.
 Proof.
   intros.
   symmetry.
@@ -127,7 +127,7 @@ Proof.
   rewrite F_mul_comm.
   simpl.
   rewrite F_mul_1.
-  apply (F_mul_inv_1 (x|Px)).
+  apply (F_mul_inv_1 (x†Px)).
 Qed.
 
 Definition Prop1_16_a : forall x,
@@ -231,23 +231,23 @@ Proof.
 Qed.
 
 Lemma Prop1_18_lemma : forall x Px,
-  0 < x -> 0 < /(x|Px).
+  0 < x -> 0 < /(x†Px).
 Proof.
   intros.
-  destruct (O_prop1 0 (/(x|Px))) as [H3| [H3 | H3]] eqn:H0.
+  destruct (O_prop1 0 (/(x†Px))) as [H3| [H3 | H3]] eqn:H0.
     + apply H3.
     + destruct H3 as [H4 [H5 H6]]. assert (False) as contra.
-      { apply F_nonzero. replace 0 with (/(x|Px)).
+      { apply F_nonzero. replace 0 with (/(x†Px)).
         apply Prop_1_15_d_prev. }
       destruct contra.
     + destruct H3 as [H4 [H5 H6]].
       assert (False) as contra.
-      { pose (Prop1_18_c (/(x|Px)) 0 x) as H7.
-        assert (/ (x | Px) < 0 < x) as H9.
+      { pose (Prop1_18_c (/(x†Px)) 0 x) as H7.
+        assert (/ (x † Px) < 0 < x) as H9.
         { split. apply H6. apply H. }
         apply H7 in H9.
         rewrite F_mul_comm in H9.
-        rewrite (F_mul_inv_1 (x|Px)) in H9.
+        rewrite (F_mul_inv_1 (x†Px)) in H9.
         rewrite F_mul_comm in H9.
         rewrite Prop1_16_a in H9.
         destruct (O_prop1 0 1) as [H1 | [H1 | H1]].
@@ -259,17 +259,17 @@ Proof.
 Qed.
 
 Definition Prop1_18_e : forall x Px y Py,
-  0 < x < y -> 0 < /(y|Py) < /(x|Px).
+  0 < x < y -> 0 < /(y†Py) < /(x†Px).
 Proof.
   intros.
   destruct H as [H1 H2].
-  assert (0 < /(y|Py)).
+  assert (0 < /(y†Py)).
   { apply Prop1_18_lemma.
     eapply O_prop2.
     apply H1. apply H2. }
   split.
   - apply H.
-  - assert (0 < /(x|Px)).
+  - assert (0 < /(x†Px)).
     apply Prop1_18_lemma.
     apply H1.
     assert (0 < y - x).
@@ -278,28 +278,28 @@ Proof.
       2: { rewrite F_add_comm. apply F_add_opp_0. }
       apply ordered_field_add.
       apply H2. }
-    assert (0 < (/(x|Px)) * ((/(y|Py))) * (y-x)) as H4.
+    assert (0 < (/(x†Px)) * ((/(y†Py))) * (y-x)) as H4.
     { apply ordered_field_zero. 2: apply H3.
       apply ordered_field_zero. 2: apply H.
       apply H0. }
       rewrite F_distr in H4.
       rewrite (F_mul_assoc _ _ y) in H4.
       rewrite (F_mul_comm _ y) in H4.
-      rewrite (F_mul_inv_1 (y|Py)) in H4.
+      rewrite (F_mul_inv_1 (y†Py)) in H4.
       rewrite F_mul_comm in H4.
       rewrite F_mul_1 in H4.
       rewrite F_mul_comm in H4.
       rewrite <- F_mul_assoc in H4.
       rewrite <- Prop1_16_c1 in H4.
-      rewrite (F_mul_inv_1 (x|Px)) in H4.
+      rewrite (F_mul_inv_1 (x†Px)) in H4.
       rewrite <- Prop1_16_c1 in H4.
       rewrite F_mul_1 in H4.
-      rewrite <- (F_add_0 (/(y|Py))).
+      rewrite <- (F_add_0 (/(y†Py))).
       rewrite F_add_comm.
-      replace (/(x|Px)) with ((/(y|Py)) + ((/(x|Px))- (/(y|Py)))).
+      replace (/(x†Px)) with ((/(y†Py)) + ((/(x†Px))- (/(y†Py)))).
       2:{ rewrite F_add_comm.
           rewrite F_add_assoc.
-          rewrite (F_add_comm _ (/(y|Py))).
+          rewrite (F_add_comm _ (/(y†Py))).
           rewrite F_add_opp_0.
           rewrite F_add_comm.
           apply F_add_0. }
@@ -310,6 +310,7 @@ Qed.
 End Props.
 
 Close Scope F_scope.
+Close Scope ord_scope.
 
 
 
